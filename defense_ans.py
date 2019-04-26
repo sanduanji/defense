@@ -1,3 +1,4 @@
+from __future__ import print_function
 import torch
 import torchvision
 from torch.autograd import Variable
@@ -85,15 +86,15 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_dir', default='/home/zhuxudong/competition/ijcai2019/dev_data/',
+    parser.add_argument('--input_dir', default='',
                         help='input defense data')
     parser.add_argument('--gpu_id', default=2, nargs='+',
                         help='gpu ids to use, e.g. 0 1 2 3', type=int)
     parser.add_argument('--batch_size', default=32,
                         help='batch size, e.g. 16, 32, 64...', type=int)
-    parser.add_argument('--output_dir', default='/home/zhuxudong/competition/ijcai2019/',
+    parser.add_argument('--output_dir', default='',
                         help='output defense output answer')
-    parser.add_argument('--weight_path', default='../checkpoint/')
+    parser.add_argument('--weight_path', default='checkpoints/')
     parser.add_argument('--image_height', default=224,type=int,
                         help='set the imgae height')
     parser.add_argument('--image_width', default=224, type=int,
@@ -104,4 +105,4 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     print('defense begim')
-    defense('densenet121', args.input_dir, os.path.join(args.output_dir, 'dev_data.csv'), args.batch_size,  args.weight_path)
+    defense('densenet121', args.input_dir, os.path.join(args.output_dir), args.batch_size,  args.weight_path)

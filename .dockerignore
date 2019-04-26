@@ -1,0 +1,7 @@
+*.zip
+*.tar.gz
+*.swp
+*.swo
+__pycache__/
+dev_data/
+temp/
