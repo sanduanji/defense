@@ -1,4 +1,3 @@
-from __future__ import print_function
 import torch
 import torchvision
 from torch.autograd import Variable
@@ -8,7 +7,6 @@ import numpy as np
 import time
 import os
 import glob
-from progressbar import *
 import argparse
 import pandas as pd
 
@@ -34,7 +32,6 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
     nb_class = 110
     Model = model_map[model_name]
     defense_model = Model(num_classes=110)
-    print('loading data for model {}'.format(model_name))
     img_size = defense_model.input_size[0]
     defense_loaders = load_data_for_defense(input_dir, img_size, batch_size)
 
@@ -50,7 +47,6 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
     # pth_file = glob.glob(os.path.join(weights_path, 'ep_*.pth'))[0]
     # pth_file = '/home/zhuxudong/competition/ijcai2019/pytorch_ijcai/ijcai_defense/tmp/my_ijcai_model.pth'
     pth_file = os.path.join(weights_path, 'my_ijcai_model.pth')
-    print('loading model weights from {}'.format(pth_file))
 
     state_dict = torch.load(pth_file)
     new_state_dict = OrderedDict()
@@ -69,10 +65,7 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
     defense_model.cuda()
     defense_model.eval()
 
-    widgets = ['dev_data: ',Percentage(), ' ',Bar('*'), ' ', Timer(), ' ',ETA(), '' ,FileTransferSpeed()]
-    pbar = ProgressBar(widgets)
-    for batch_data in pbar(defense_loaders['dev_data']):
-        print('defense')
+    for batch_data in defense_loaders['dev_data']:
         image = batch_data['image'].to(device)
         filename = batch_data['filename']
         with torch.no_grad():
@@ -80,7 +73,6 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
         y_pred = logits.max(1)[1].detach().cpu().numpy().tolist()
         result['filename'].extend(filename)
         result['predict'].extend(y_pred)
-    print('write result to: ', output_file)
     pd.DataFrame(result).to_csv(output_file, header=False, index=False)
 
 
@@ -104,5 +96,4 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    print('defense begim')
     defense('densenet121', args.input_dir, os.path.join(args.output_dir), args.batch_size,  args.weight_path)
