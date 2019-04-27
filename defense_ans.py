@@ -20,7 +20,6 @@ from densenet import densenet121, densenet161
 
 from collections import OrderedDict
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1, 2'
 
 model_map = {
     'densenet121':densenet121,
@@ -28,7 +27,6 @@ model_map = {
 }
 
 def defense(model_name, input_dir, output_file, batch_size, weights_path):
-    batchshape = [args.batch_size, args.image_height, args.image_width, 3]
     nb_class = 110
     Model = model_map[model_name]
     defense_model = Model(num_classes=110)
@@ -40,7 +38,6 @@ def defense(model_name, input_dir, output_file, batch_size, weights_path):
     # defense_model.load_state_dict(torch.load('/home/zhuxudong/competition/ijcai2019/pytorch_ijcai/ijcai_defense/tmp/my_ijcai_model.pth'))
 
     device = torch.device('cuda')
-    gpu_ids = [0]
     # defense_model = torch.nn.DataParallel(defense_model, device_ids = gpu_ids)
     defense_model = torch.nn.DataParallel(defense_model)
     torch.backends.cudnn.benchmark = True
@@ -80,17 +77,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', default='',
                         help='input defense data')
-    parser.add_argument('--gpu_id', default=2, nargs='+',
-                        help='gpu ids to use, e.g. 0 1 2 3', type=int)
     parser.add_argument('--batch_size', default=32,
                         help='batch size, e.g. 16, 32, 64...', type=int)
     parser.add_argument('--output_dir', default='',
                         help='output defense output answer')
     parser.add_argument('--weight_path', default='checkpoints/')
-    parser.add_argument('--image_height', default=224,type=int,
-                        help='set the imgae height')
-    parser.add_argument('--image_width', default=224, type=int,
-                        help='set the image width')
     return parser.parse_args()
 
 
